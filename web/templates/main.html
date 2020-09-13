@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="author" content="davidlin">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="https://davidlinhl.github.io/assets/css/main.css">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="http://jqueryfiledownload.apphb.com//Scripts/jquery.fileDownload.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/floating-labels/">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+
+    <link href="//cdn.bootcss.com/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+    <script src="//cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+
+    <!-- <script src="//code.jquery.com/jquery-3.1.1.min.js"></script> -->
+
+    {% block head %}
+    {% end %}
+</head>
+<body>
+  <div class="container">
+    <div class="jumbotron text-center">
+      <h1>证书生成</h1>
+    </div>
+
+    <!-- 选择模板  -->
+
+    <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel" data-interval="false">
+      <ol class="carousel-indicators">
+        {% for ind, cert in enumerate(certs) %}
+          <li data-target="#carouselExampleCaptions" data-slide-to="{{ind}}" {% if ind == 1 %} class="active" {% end %}></li>
+        {% end %}
+      </ol>
+
+      <div class="carousel-inner">
+        {% for ind, cert in enumerate(certs) %}
+          <div class="carousel-item {% if ind == 1 %}active{% end %}">
+            <img src="{{static_url(cert)}}" class="d-block w-100" alt="..." id="cert-img-{{ind}}">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>First slide label</h5>
+              <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+            </div>
+          </div>
+        {% end %}
+      </div>
+
+      <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  <br><br>
+  <div align="center">
+    <button class="btn btn-success" align="center" id="download-button" onclick="return download_cert()">下载证书</button>
+  </div>
+
+  <!-- 三个部分：人名，证书正文，等级 -->
+  <br><br><br>
+  <form role="form" id="form" method="post" action="/">
+    <h3 align="center">名称部分</h3>
+    <div class="form-group">
+      <label for="name-text">内容</label>
+      <input type="text" class="form-control" id="name-text" name="name-text" value="艾琳 小姐姐">
+      <!-- <small id="emailHelp" class="form-text text-muted"></small> -->
+    </div>
+
+    <div class="form-group">
+      <label for="name-font">字体</label>
+      <select class="form-control" id="name-font" name="name-font">
+        {% for font in fonts %}
+          <option>{{font}}</option>
+        {% end %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="name-font-size" id='name-font-size-label'>字号:</label>
+      <input type="range" class="form-control-range" id="name-font-size" min="1" max="48" value='28' name="name-font-size">
+    </div>
+
+
+
+    <br><br>
+    <h3 align="center">证书正文</h3>
+    <div class="form-group">
+      <label for="content-text">正文部分内容</label>
+      <textarea type="text" class="form-control" id="content-text" rows=3  name="content-text" >人美心善</textarea>
+      <small id="emailHelp" class="form-text text-muted">在此输入证书正文</small>
+    </div>
+    <div class="form-group">
+      <label for="content-font">字体</label>
+      <select class="form-control" id="content-font" name="content-font">
+        {% for font in fonts %}
+          <option>{{font}}</option>
+        {% end %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="content-font-size" id='content-font-size-label'>字号:</label>
+      <input type="range" class="form-control-range" id="content-font-size" min="1" max="48" value='16' name="content-font-size">
+    </div>
+
+    <br><br>
+    <h3 align="center">等级</h3>
+    <div class="form-group">
+      <label for="grade-content">等级部分内容</label>
+      <input type="text" class="form-control" id="grade-content" name="grade-content" value="证书等级">
+      <!-- <small id="emailHelp" class="form-text text-muted"></small> -->
+    </div>
+    <div class="form-group">
+      <label for="grade-font">字体</label>
+      <select class="form-control" id="grade-font" name="grade-font">
+        {% for font in fonts %}
+          <option>{{font}}</option>
+        {% end %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="grade-font-size" id='grade-font-size-label'>字号:</label>
+      <input type="range" class="form-control-range" id="grade-font-size" min="1" max="48" value='32' name="grade-font-size">
+    </div>
+
+    <div align="center">
+      <button type="submit" class="btn btn-primary" align="center">制作证书</button>
+    </div>
+  </form>
+
+
+  </div>
+
+  <br><br><br>
+  <footer>
+    <div class="footer-wrapper">
+        <footer role="contentinfo">
+            <span>© 2020 Made with Love by <a target="_blank" href="https://davidlinhl.github.io" rel="noopener">David Lin</a></span>
+        </footer>
+    </div>
+</footer>
+
+
+<script type="text/javascript">
+$("#download-button").hide()
+
+$('form').submit(function (event) {
+  console.log("submit clicked");
+      event.preventDefault();
+      var form = $(this);
+      console.log(form.serialize())
+      if (!form.hasClass('fupload')) {
+        //普通表单
+        $.ajax({
+          type: form.attr('method'),
+          url: form.attr('action'),
+          data: form.serialize(),
+          dataType: "json",
+          success: function(res) {
+            if(res['status'] == 'ok') {
+              $("#download-button").show()
+              paths=res['img_paths']
+              for(var i=0;i<{{len(certs)}};i++) {
+                $("#cert-img-".concat(i)).attr("src", paths[i] );
+              }
+            } else {
+
+            }
+
+          },
+          fail: function(res) {
+
+          }
+
+        });
+      }
+      else {
+        // mulitipart form,如文件上传类
+        var formData = new FormData(this);
+        $.ajax({
+          type: form.attr('method'),
+          url: form.attr('action'),
+          data: formData,
+          mimeType: "multipart/form-data",
+          contentType: false,
+          cache: false,
+          processData: false
+        }).success(function () {
+          //成功提交
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+          //错误信息
+        });
+      };
+    });
+
+
+function download_cert() {
+  var res=$("div[class='carousel-item active']").children('img').attr("src");
+
+  $.ajax({
+    type: "get",
+    url: "/pdf",
+    data: {"path":res},
+    dataType: "json",
+    success: function(res) {
+      if(res['status'] == "ok") {
+        console.log(res)
+        // window.location = res['path'];
+        var a = document.createElement('a');
+        a.href = res.path; //图片地址
+        a.download = res.name; //图片名及格式
+        document.body.appendChild(a);
+        a.click();
+
+      } else {
+
+      }
+
+    }
+  });
+}
+
+
+
+var slider1 = document.getElementById("name-font-size");
+var output1 = document.getElementById("name-font-size-label");
+output1.innerHTML =  "字号： ".concat(slider1.value);;
+
+slider1.oninput = function() {
+  output1.innerHTML =  "字号： ".concat(slider1.value);
+}
+
+
+var slider2 = document.getElementById("content-font-size");
+var output2 = document.getElementById("content-font-size-label");
+output2.innerHTML =  "字号： ".concat(slider2.value);;
+slider2.oninput = function() {
+  output2.innerHTML =  "字号： ".concat(slider2.value);
+}
+
+var slider3 = document.getElementById("grade-font-size");
+var output3 = document.getElementById("grade-font-size-label");
+output3.innerHTML =  "字号： ".concat(slider3.value);;
+slider3.oninput = function() {
+  output3.innerHTML =  "字号： ".concat(slider3.value);
+}
+
+</script>
+
+</body>
+</html>
